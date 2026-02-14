@@ -27,20 +27,23 @@ def generate_pdf(ranking_data, tournament_name, output_path="ranking.pdf"):
     pdf = FPDF()
     pdf.add_page()
 
-    # Use built-in font (Helvetica) - supports standard Latin characters
-    pdf.set_font("Helvetica", "B", 16)
+    # Use DejaVu Sans for Unicode support (bundled with fpdf2)
+    pdf.add_font("DejaVu", "", fname="DejaVuSans.ttf")
+    pdf.add_font("DejaVu", "B", fname="DejaVuSans-Bold.ttf")
+
+    pdf.set_font("DejaVu", "B", 16)
     pdf.cell(0, 10, tournament_name, align="C", ln=True)
     pdf.ln(5)
 
     # Table header
-    pdf.set_font("Helvetica", "B", 12)
+    pdf.set_font("DejaVu", "B", 12)
     pdf.cell(20, 10, "Place", border=1, align="C")
     pdf.cell(120, 10, "Player Name", border=1, align="C")
     pdf.cell(40, 10, "Total Points", border=1, align="C")
     pdf.ln()
 
     # Table rows
-    pdf.set_font("Helvetica", "", 12)
+    pdf.set_font("DejaVu", "", 12)
     for idx, entry in enumerate(ranking_data, start=1):
         player_name = entry["player"]["name"]
         total_points = entry["total_points"]
