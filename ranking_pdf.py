@@ -2,6 +2,7 @@
 """Generate PDF ranking from mahjongtracker.com tournament data."""
 
 import sys
+from datetime import datetime
 import requests
 from fpdf import FPDF
 
@@ -26,31 +27,38 @@ def generate_pdf(ranking_data, tournament_name, output_path="ranking.pdf"):
     """Generate PDF table with ranking data."""
     pdf = FPDF()
     pdf.add_page()
+    pdf.set_margins(10, 10, 10)
 
     # Use DejaVu Sans for Unicode support (bundled with fpdf2)
     pdf.add_font("DejaVu", "", fname="DejaVuSans.ttf")
     pdf.add_font("DejaVu", "B", fname="DejaVuSans-Bold.ttf")
 
-    pdf.set_font("DejaVu", "B", 16)
-    pdf.cell(0, 10, tournament_name, align="C", ln=True)
-    pdf.ln(5)
+    # Title
+    pdf.set_font("DejaVu", "B", 12)
+    pdf.cell(0, 6, tournament_name, align="C", ln=True)
+
+    # Timestamp subtitle
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+    pdf.set_font("DejaVu", "", 8)
+    pdf.cell(0, 4, f"(generated at {timestamp})", align="C", ln=True)
+    pdf.ln(2)
 
     # Table header
-    pdf.set_font("DejaVu", "B", 12)
-    pdf.cell(20, 10, "Place", border=1, align="C")
-    pdf.cell(120, 10, "Player Name", border=1, align="C")
-    pdf.cell(40, 10, "Total Points", border=1, align="C")
+    pdf.set_font("DejaVu", "B", 9)
+    pdf.cell(15, 5, "Place", border=1, align="C")
+    pdf.cell(140, 5, "Player Name", border=1, align="C")
+    pdf.cell(35, 5, "Total Points", border=1, align="C")
     pdf.ln()
 
     # Table rows
-    pdf.set_font("DejaVu", "", 12)
+    pdf.set_font("DejaVu", "", 9)
     for idx, entry in enumerate(ranking_data, start=1):
         player_name = entry["player"]["name"]
         total_points = entry["total_points"]
 
-        pdf.cell(20, 10, str(idx), border=1, align="C")
-        pdf.cell(120, 10, player_name, border=1)
-        pdf.cell(40, 10, str(total_points), border=1, align="R")
+        pdf.cell(15, 5, str(idx), border=1, align="C")
+        pdf.cell(140, 5, player_name, border=1)
+        pdf.cell(35, 5, str(total_points), border=1, align="R")
         pdf.ln()
 
     pdf.output(output_path)
