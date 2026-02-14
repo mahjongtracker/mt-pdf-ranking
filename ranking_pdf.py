@@ -25,13 +25,23 @@ def fetch_ranking(tournament_id):
 
 def generate_pdf(ranking_data, tournament_name, output_path="ranking.pdf"):
     """Generate PDF table with ranking data."""
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_margins(10, 10, 10)
 
-    # Use DejaVu Sans for Unicode support (bundled with fpdf2)
+    class PDFWithFooter(FPDF):
+        def footer(self):
+            # Text at 10mm from bottom
+            self.set_y(-10)
+            self.set_font("DejaVu", "", 6)
+            self.cell(0, 2, "Powered by Mahjong Tracker - mahjongtracker.com", align="C")
+
+    pdf = PDFWithFooter()
+
+    # Use DejaVu Sans for Unicode support
     pdf.add_font("DejaVu", "", fname="DejaVuSans.ttf")
     pdf.add_font("DejaVu", "B", fname="DejaVuSans-Bold.ttf")
+
+    pdf.add_page()
+    pdf.set_margins(10, 10, 10)
+    pdf.set_auto_page_break(auto=True, margin=15)
 
     # Title
     pdf.set_font("DejaVu", "B", 12)
@@ -41,7 +51,7 @@ def generate_pdf(ranking_data, tournament_name, output_path="ranking.pdf"):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
     pdf.set_font("DejaVu", "", 8)
     pdf.cell(0, 4, f"(generated at {timestamp})", align="C", ln=True)
-    pdf.ln(2)
+    pdf.ln(10)
 
     # Table header
     pdf.set_font("DejaVu", "B", 9)
